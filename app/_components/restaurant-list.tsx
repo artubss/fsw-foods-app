@@ -17,7 +17,10 @@ const RestaurantList = async () => {
       {restaurants.map((restaurant) => (
         <RestaurantItem
           key={restaurant.id}
-          restaurant={restaurant}
+          restaurant={{
+            ...restaurant,
+            deliveryFee: Number(restaurant.deliveryFee),
+          }}
           userFavoriteRestaurants={userFavoriteRestaurants}
         />
       ))}

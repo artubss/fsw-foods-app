@@ -1,13 +1,18 @@
 import { Product } from "@prisma/client";
 
+export const convertDecimalToNumber = (value: any): number => {
+  return Number(value);
+};
+
 export const calculateProductTotalPrice = (product: Product): number => {
   if (product.discountPercentage === 0) {
-    return Number(product.price);
+    return convertDecimalToNumber(product.price);
   }
 
-  const discount = Number(product.price) * (product.discountPercentage / 100);
+  const discount =
+    convertDecimalToNumber(product.price) * (product.discountPercentage / 100);
 
-  return Number(product.price) - discount;
+  return convertDecimalToNumber(product.price) - discount;
 };
 
 export const formatCurrency = (value: number): string => {

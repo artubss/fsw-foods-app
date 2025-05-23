@@ -25,6 +25,7 @@ import { CartContext } from "@/app/_context/cart";
 import {
   formatCurrency,
   calculateProductTotalPrice,
+  convertDecimalToNumber,
 } from "@/app/_helpers/price";
 import { Prisma } from "@prisma/client";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
@@ -50,25 +51,26 @@ const ProductDetails = ({
 }: ProductDetailsProps) => {
   const [quantity, setQuantity] = useState(1);
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [isConfirmationDialogOpen, setIsConfirmationDialogOpen] =
-    useState(false);
+  const [isAlertDialogOpen, setIsAlertDialogOpen] = useState(false);
 
   const { addProductToCart, products } = useContext(CartContext);
 
   const addToCart = ({ emptyCart }: { emptyCart?: boolean }) => {
-    addProductToCart({ product: { ...product, quantity }, emptyCart });
+    addProductToCart({
+      product: { ...product, quantity },
+      emptyCart,
+    });
+
     setIsCartOpen(true);
   };
 
   const handleAddToCartClick = () => {
-    // VERIFICAR SE HÁ ALGUM PRODUTO DE OUTRO RESTAURANTE NO CARRINHO
     const hasDifferentRestaurantProduct = products.some(
-      (cartProduct) => cartProduct.restaurantId !== product.restaurantId,
+      (cartProduct) => cartProduct.restaurant.id !== product.restaurant.id,
     );
 
-    // SE HOUVER, ABRIR UM AVISO
     if (hasDifferentRestaurantProduct) {
-      return setIsConfirmationDialogOpen(true);
+      return setIsAlertDialogOpen(true);
     }
 
     addToCart({
@@ -76,13 +78,12 @@ const ProductDetails = ({
     });
   };
 
-  const handleIncreaseQuantityClick = () =>
-    setQuantity((currentState) => currentState + 1);
+  const handleIncreaseQuantityClick = () => setQuantity((prev) => prev + 1);
   const handleDecreaseQuantityClick = () =>
-    setQuantity((currentState) => {
-      if (currentState === 1) return 1;
+    setQuantity((prev) => {
+      if (prev === 1) return 1;
 
-      return currentState - 1;
+      return prev - 1;
     });
 
   return (
@@ -123,13 +124,13 @@ const ProductDetails = ({
             {/* PREÇO ORIGINAL */}
             {product.discountPercentage > 0 && (
               <p className="text-sm text-muted-foreground">
-                De: {formatCurrency(Number(product.price))}
+                De: {formatCurrency(convertDecimalToNumber(product.price))}
               </p>
             )}
           </div>
 
           {/* QUANTIDADE */}
-          <div className="flex items-center gap-3 text-center">
+          <div className="flex items-center gap-3">
             <Button
               size="icon"
               variant="ghost"
@@ -139,14 +140,23 @@ const ProductDetails = ({
               <ChevronLeftIcon />
             </Button>
             <span className="w-4">{quantity}</span>
-            <Button size="icon" onClick={handleIncreaseQuantityClick}>
+            <Button
+              size="icon"
+              className="border border-solid border-muted-foreground"
+              onClick={handleIncreaseQuantityClick}
+            >
               <ChevronRightIcon />
             </Button>
           </div>
         </div>
 
         <div className="px-5">
-          <DeliveryInfo restaurant={product.restaurant} />
+          <DeliveryInfo
+            restaurant={{
+              ...product.restaurant,
+              deliveryFee: Number(product.restaurant.deliveryFee),
+            }}
+          />
         </div>
 
         <div className="mt-6 space-y-3 px-5">
@@ -170,7 +180,7 @@ const ProductDetails = ({
       </div>
 
       <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
-        <SheetContent className="w-[90vw]">
+        <SheetContent>
           <SheetHeader>
             <SheetTitle className="text-left">Sacola</SheetTitle>
           </SheetHeader>
@@ -179,10 +189,7 @@ const ProductDetails = ({
         </SheetContent>
       </Sheet>
 
-      <AlertDialog
-        open={isConfirmationDialogOpen}
-        onOpenChange={setIsConfirmationDialogOpen}
-      >
+      <AlertDialog open={isAlertDialogOpen} onOpenChange={setIsAlertDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>

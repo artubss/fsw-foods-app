@@ -2,7 +2,7 @@ import { useContext, useState } from "react";
 import { CartContext } from "../_context/cart";
 import CartItem from "./cart-item";
 import { Card, CardContent } from "./ui/card";
-import { formatCurrency } from "../_helpers/price";
+import { formatCurrency, convertDecimalToNumber } from "../_helpers/price";
 import { Separator } from "./ui/separator";
 import { Button } from "./ui/button";
 import { createOrder } from "../_actions/order";
@@ -118,11 +118,15 @@ const Cart = ({ setIsOpen }: CartProps) => {
                   <div className="flex items-center justify-between text-xs">
                     <span className="text-muted-foreground">Entrega</span>
 
-                    {Number(products?.[0].restaurant.deliveryFee) === 0 ? (
+                    {convertDecimalToNumber(
+                      products?.[0].restaurant.deliveryFee,
+                    ) === 0 ? (
                       <span className="uppercase text-primary">Grátis</span>
                     ) : (
                       formatCurrency(
-                        Number(products?.[0].restaurant.deliveryFee),
+                        convertDecimalToNumber(
+                          products?.[0].restaurant.deliveryFee,
+                        ),
                       )
                     )}
                   </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { Restaurant, UserFavoriteRestaurant } from "@prisma/client";
+import { UserFavoriteRestaurant } from "@prisma/client";
 import { BikeIcon, HeartIcon, StarIcon, TimerIcon } from "lucide-react";
 import Image from "next/image";
 import { formatCurrency } from "../_helpers/price";
@@ -10,9 +10,16 @@ import { cn } from "../_lib/utils";
 import { toggleFavoriteRestaurant } from "../_actions/restaurant";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
+import { convertDecimalToNumber } from "../_helpers/price";
 
 interface RestaurantItemProps {
-  restaurant: Restaurant;
+  restaurant: {
+    id: string;
+    name: string;
+    imageUrl: string;
+    deliveryFee: number;
+    deliveryTimeMinutes: number;
+  };
   className?: string;
   userFavoriteRestaurants: UserFavoriteRestaurant[];
 }
@@ -80,9 +87,11 @@ const RestaurantItem = ({
             <div className="flex items-center gap-1">
               <BikeIcon className="text-primary" size={14} />
               <span className="text-xs text-muted-foreground">
-                {Number(restaurant.deliveryFee) === 0
+                {convertDecimalToNumber(restaurant.deliveryFee) === 0
                   ? "Entrega grátis"
-                  : formatCurrency(Number(restaurant.deliveryFee))}
+                  : formatCurrency(
+                      convertDecimalToNumber(restaurant.deliveryFee),
+                    )}
               </span>
             </div>
             {/* TEMPO DE ENTREGA */}

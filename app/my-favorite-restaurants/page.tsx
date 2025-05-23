@@ -31,7 +31,10 @@ const MyFavoriteRestaurants = async () => {
             userFavoriteRestaurants.map(({ restaurant }) => (
               <RestaurantItem
                 key={restaurant.id}
-                restaurant={restaurant}
+                restaurant={{
+                  ...restaurant,
+                  deliveryFee: Number(restaurant.deliveryFee),
+                }}
                 className="min-w-full max-w-full"
                 userFavoriteRestaurants={userFavoriteRestaurants}
               />

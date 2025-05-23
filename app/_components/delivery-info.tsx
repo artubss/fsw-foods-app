@@ -1,10 +1,12 @@
 import { BikeIcon, TimerIcon } from "lucide-react";
 import { Card } from "./ui/card";
-import { formatCurrency } from "../_helpers/price";
-import { Restaurant } from "@prisma/client";
+import { formatCurrency, convertDecimalToNumber } from "../_helpers/price";
 
 interface DeliveryInfoProps {
-  restaurant: Pick<Restaurant, "deliveryFee" | "deliveryTimeMinutes">;
+  restaurant: {
+    deliveryFee: number;
+    deliveryTimeMinutes: number;
+  };
 }
 
 const DeliveryInfo = ({ restaurant }: DeliveryInfoProps) => {
@@ -18,9 +20,9 @@ const DeliveryInfo = ({ restaurant }: DeliveryInfoProps) => {
             <BikeIcon size={14} />
           </div>
 
-          {Number(restaurant.deliveryFee) > 0 ? (
+          {convertDecimalToNumber(restaurant.deliveryFee) > 0 ? (
             <p className="text-xs font-semibold">
-              {formatCurrency(Number(restaurant.deliveryFee))}
+              {formatCurrency(convertDecimalToNumber(restaurant.deliveryFee))}
             </p>
           ) : (
             <p className="text-xs font-semibold">Grátis</p>
