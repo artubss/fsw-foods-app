@@ -12,15 +12,9 @@ const RestaurantList = async () => {
     where: { userId: session?.user?.id },
   });
 
-  // Convertendo os valores decimais para números
-  const formattedRestaurants = restaurants.map(restaurant => ({
-    ...restaurant,
-    deliveryFee: Number(restaurant.deliveryFee),
-  }));
-
   return (
     <div className="flex gap-4 overflow-x-scroll px-5 [&::-webkit-scrollbar]:hidden">
-      {formattedRestaurants.map((restaurant) => (
+      {restaurants.map((restaurant) => (
         <RestaurantItem
           key={restaurant.id}
           restaurant={restaurant}

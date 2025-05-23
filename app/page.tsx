@@ -5,7 +5,7 @@ import ProductList from "./_components/product-list";
 import { Button } from "./_components/ui/button";
 import { ChevronRightIcon } from "lucide-react";
 import { db } from "./_lib/prisma";
-import PromoBanner from "./_components/promo-banner";
+import { PromoBanner } from "./_components/promo-banner";
 import RestaurantList from "./_components/restaurant-list";
 import Link from "next/link";
 
@@ -44,16 +44,10 @@ const fetch = async () => {
     getPizzasCategory,
   ]);
 
-  // Convertendo os valores decimais para números
-  const formattedProducts = products.map(product => ({
-    ...product,
-    price: Number(product.price),
-  }));
-
-  return { 
-    products: formattedProducts, 
-    burguersCategory, 
-    pizzasCategory 
+  return {
+    products,
+    burguersCategory,
+    pizzasCategory,
   };
 };
 
